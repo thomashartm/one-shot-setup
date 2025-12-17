@@ -79,9 +79,9 @@ _nodejs_install_latest_node() {
   # shellcheck disable=SC1090
   . "$nvm_sh" >/dev/null 2>&1
 
-  # Install + use "node" (latest)
-  nvm install node
-  nvm alias default node
+  # Install latest LTS (more compatible than Current/odd versions like 25) :contentReference[oaicite:3]{index=3}
+  nvm install --lts
+  nvm alias default lts/*
   nvm use default >/dev/null 2>&1 || true
 }
 
