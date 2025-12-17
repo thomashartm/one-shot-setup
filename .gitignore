@@ -1,0 +1,26 @@
+# -------- macOS --------
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# -------- Editor / IDE --------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.tmp
+
+# -------- Shell / logs --------
+*.log
+
+# -------- OneShotSetup local state (never commit user machine state) --------
+.one-shot-setup/
+.one-shot-setup/**
+# (The actual state folder is in the user's HOME: ~/.one-shot-setup,
+# but ignore this too in case someone runs tests in-repo.)
