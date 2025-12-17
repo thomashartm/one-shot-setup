@@ -20,7 +20,7 @@ OneShotSetup provides:
 ```
 
 .
-├── start.sh
+├── osh-setup.sh
 └── tools
 ├── homebrew.sh
 ├── oh-my-zsh.sh
@@ -28,7 +28,7 @@ OneShotSetup provides:
 
 ````
 
-- `start.sh` = main CLI
+- `osh-setup.sh` = main CLI
 - `tools/*.sh` = tool “feature scripts” (each tool registers itself)
 - `scripts/new-tool.sh` = interactive generator that creates `tools/<id>.sh`
 
@@ -47,8 +47,8 @@ OneShotSetup provides:
 git clone <your-repo-url>
 cd <your-repo-folder>
 
-chmod +x start.sh
-./start.sh list
+chmod +x osh-setup.sh
+./osh-setup.sh list
 ````
 
 ---
@@ -58,7 +58,7 @@ chmod +x start.sh
 ### List available tools
 
 ```bash
-./start.sh list
+./osh-setup.sh list
 ```
 
 Shows a numbered list with:
@@ -74,9 +74,9 @@ Shows a numbered list with:
 Open the tool’s official page in your browser:
 
 ```bash
-./start.sh show homebrew
-./start.sh show 1
-./start.sh show all
+./osh-setup.sh show homebrew
+./osh-setup.sh show 1
+./osh-setup.sh show all
 ```
 
 ### Install tools
@@ -84,27 +84,27 @@ Open the tool’s official page in your browser:
 Install by id, number, or `all`:
 
 ```bash
-./start.sh install homebrew
-./start.sh install 1 3
-./start.sh install all
+./osh-setup.sh install homebrew
+./osh-setup.sh install 1 3
+./osh-setup.sh install all
 ```
 
 Non-interactive mode:
 
 ```bash
-./start.sh install homebrew claude -y
+./osh-setup.sh install homebrew claude -y
 ```
 
 Skip dependency expansion (advanced):
 
 ```bash
-./start.sh install claude --no-deps
+./osh-setup.sh install claude --no-deps
 ```
 
 ### Check installation status and versions
 
 ```bash
-./start.sh status
+./osh-setup.sh status
 ```
 
 Outputs install detection + current version for every registered tool.
@@ -112,7 +112,7 @@ Outputs install detection + current version for every registered tool.
 ### List installed tools
 
 ```bash
-./start.sh installed
+./osh-setup.sh installed
 ```
 
 Shows only tools currently detected as installed.
@@ -120,7 +120,7 @@ Shows only tools currently detected as installed.
 ### View install history log
 
 ```bash
-./start.sh history
+./osh-setup.sh history
 ```
 ---
 ## Adding a new tool
@@ -187,7 +187,7 @@ Example:
 So:
 
 ```bash
-./start.sh install claude
+./osh-setup.sh install claude
 ```
 
 will install `homebrew` first (if not installed), then `claude`.
@@ -227,9 +227,9 @@ This project may run official installers that use `curl | bash` or `curl | sh`.
 
 Best practice:
 
-1. Run `./start.sh show <tool>` to open the tool’s official page.
+1. Run `./osh-setup.sh show <tool>` to open the tool’s official page.
 2. Verify the installer source and contents yourself.
-3. Then run `./start.sh install <tool>`.
+3. Then run `./osh-setup.sh install <tool>`.
 
 ---
 
