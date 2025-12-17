@@ -102,6 +102,6 @@ register_tool \
   "colima_install" \
   "colima_show" \
   40 \
-  "homebrew" \
+  "homebrew docker-cli" \
   "colima_is_installed" \
   "colima_version"

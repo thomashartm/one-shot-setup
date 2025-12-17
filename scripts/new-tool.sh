@@ -5,7 +5,7 @@ die() { echo "Error: $*" >&2; exit 1; }
 
 # Root of repo (scripts/..)
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-TEMPLATE="${REPO_DIR}/tools/_template.sh"
+TEMPLATE="${REPO_DIR}/scripts/_template.sh"
 TOOLS_DIR="${REPO_DIR}/tools"
 
 [[ -f "$TEMPLATE" ]] || die "Missing template: $TEMPLATE"
