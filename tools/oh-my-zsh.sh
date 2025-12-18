@@ -15,7 +15,7 @@ oh_my_zsh_version() {
 oh_my_zsh_install() {
   if oh_my_zsh_is_installed; then
     echo "Oh My Zsh already installed at: ${HOME}/.oh-my-zsh"
-    return 0
+    echo "The Oh My Zsh installer handles existing installations gracefully."
   fi
 
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"

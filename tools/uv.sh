@@ -27,9 +27,24 @@ _uv_ensure_local_bin_on_path() {
   mkdir -p "$localbin"
   touch "$zshenv"
 
-  # Avoid duplicates
-  if grep -Fq "${localbin}" "$zshenv"; then
+  # Check if complete config exists
+  if grep -Fq "# OneShotSetup: ensure uv install location is on PATH" "$zshenv" && \
+     grep -Fq 'export PATH="$HOME/.local/bin:$PATH"' "$zshenv"; then
     return 0
+  fi
+
+  # Remove any incomplete/old config block
+  if grep -Fq "# OneShotSetup: ensure uv install location is on PATH" "$zshenv"; then
+    echo "Removing incomplete uv PATH config from $zshenv"
+    local tmp_file
+    tmp_file="$(mktemp)"
+    awk '
+      /# OneShotSetup: ensure uv install location is on PATH/ { skip=1; next }
+      skip && /^[[:space:]]*$/ { skip=0; next }
+      skip && /^[[:space:]]*(export|PATH=)/ { next }
+      { if (!skip) print }
+    ' "$zshenv" > "$tmp_file"
+    mv "$tmp_file" "$zshenv"
   fi
 
   {

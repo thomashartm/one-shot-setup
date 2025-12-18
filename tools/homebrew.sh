@@ -15,10 +15,10 @@ homebrew_version() {
 homebrew_install() {
   if homebrew_is_installed; then
     echo "Homebrew already installed: $(command -v brew)"
-    return 0
+    echo "The official Homebrew installer is idempotent and handles existing installations."
+  else
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   fi
-
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
   if [[ -x /opt/homebrew/bin/brew ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"

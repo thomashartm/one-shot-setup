@@ -41,11 +41,24 @@ _colima_ensure_docker_host_in_zshenv() {
 
   touch "$zshenv"
 
-  # If any DOCKER_HOST is already set in .zshenv, don't duplicate; just inform.
-  if grep -Eq '^[[:space:]]*export[[:space:]]+DOCKER_HOST=' "$zshenv"; then
-    echo "Found existing DOCKER_HOST export in $zshenv (leaving as-is)."
-    echo "Wanted for Colima/SAM: $desired"
+  # Check if complete config exists
+  if grep -Fq "# OneShotSetup: AWS SAM local via Colima" "$zshenv" && \
+     grep -Eq '^[[:space:]]*export[[:space:]]+DOCKER_HOST=' "$zshenv"; then
     return 0
+  fi
+
+  # Remove any incomplete/old config block
+  if grep -Fq "# OneShotSetup: AWS SAM local via Colima" "$zshenv"; then
+    echo "Removing incomplete Colima DOCKER_HOST config from $zshenv"
+    local tmp_file
+    tmp_file="$(mktemp)"
+    awk '
+      /# OneShotSetup: AWS SAM local via Colima/ { skip=1; next }
+      skip && /^[[:space:]]*$/ { skip=0; next }
+      skip && /^[[:space:]]*(export|DOCKER_HOST=)/ { next }
+      { if (!skip) print }
+    ' "$zshenv" > "$tmp_file"
+    mv "$tmp_file" "$zshenv"
   fi
 
   {

@@ -338,13 +338,14 @@ run_install() {
       if [[ -z "${recorded_at:-}" ]]; then
         state_upsert "$id" "$name" "$installed_at_now" "$version"
         log_append "detected" "$id" "$name" "$version"
-      else
-        log_append "already" "$id" "$name" "$version"
       fi
-      continue
+      # Don't skip - ask if user wants to reinstall
+      local prompt_msg="Run installer for '$name' (reinstall/update configs)?"
+    else
+      local prompt_msg="Run installer for '$name'?"
     fi
 
-    if [[ "$yes" -eq 1 ]] || confirm "Run installer for '$name'?"; then
+    if [[ "$yes" -eq 1 ]] || confirm "$prompt_msg"; then
       set +e
       "$fn"
       local rc=$?
@@ -362,7 +363,11 @@ run_install() {
         recorded_at="$(state_get_installed_at "$id")"
         installed_at_now="${recorded_at:-$(iso_now_utc)}"
         state_upsert "$id" "$name" "$installed_at_now" "$version"
-        log_append "installed" "$id" "$name" "$version"
+        if [[ "$already" -eq 1 ]]; then
+          log_append "reinstalled" "$id" "$name" "$version"
+        else
+          log_append "installed" "$id" "$name" "$version"
+        fi
         echo "Done: $name (version: $version)"
       else
         log_append "failed" "$id" "$name" "unknown"

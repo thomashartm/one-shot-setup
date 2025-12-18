@@ -31,9 +31,24 @@ _gcloud_cli_ensure_path_for_components() {
 
   touch "$zshenv"
 
-  # If that exact path is already referenced anywhere, don't duplicate.
-  if grep -Fq "${brew_prefix}/share/google-cloud-sdk/bin" "$zshenv"; then
+  # Check if complete config exists
+  if grep -Fq "# OneShotSetup: Google Cloud CLI (gcloud)" "$zshenv" && \
+     grep -Fq "${brew_prefix}/share/google-cloud-sdk/bin" "$zshenv"; then
     return 0
+  fi
+
+  # Remove any incomplete/old config block
+  if grep -Fq "# OneShotSetup: Google Cloud CLI (gcloud)" "$zshenv"; then
+    echo "Removing incomplete gcloud PATH config from $zshenv"
+    local tmp_file
+    tmp_file="$(mktemp)"
+    awk '
+      /# OneShotSetup: Google Cloud CLI \(gcloud\)/ { skip=1; next }
+      skip && /^[[:space:]]*$/ { skip=0; next }
+      skip && /^[[:space:]]*(export|PATH=)/ { next }
+      { if (!skip) print }
+    ' "$zshenv" > "$tmp_file"
+    mv "$tmp_file" "$zshenv"
   fi
 
   {
