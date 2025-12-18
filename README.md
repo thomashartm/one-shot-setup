@@ -2,35 +2,37 @@
 
 A reproducible macOS development machine bootstrapper you can keep in a Git repo and re-run after reinstalling macOS.
 
-OneShotSetup provides:
+**Key Features:**
 
-- A **tool registry** (numbered list with name + description)
-- `install` command to run official installers (including `curl | bash` flows)
-- `show` command to open install pages for manual verification
-- **Dependency-aware installs** (e.g. install Homebrew before tools that rely on it)
-- A local **state folder** in your home directory:
-  - install history log
-  - installed tool registry (install date + version)
-- Commands to check **status**, list **installed** tools, and view **history**
+- **Tool registry** - Numbered list of available tools with descriptions
+- **Dependency resolution** - Automatically installs dependencies first (e.g., Homebrew before tools that need it)
+- **Reinstallation support** - Re-run installers to restore shell configs after accidental deletions or updates
+- **State tracking** - Local state folder (`~/.one-shot-setup/`) with install history and version tracking
+- **Safe verification** - `show` command opens official docs before installing
+- **Status commands** - Check what's installed, view history, see versions
 
 ---
 
-## Repository layout
+## Repository Layout
 
 ```
-
 .
-├── osh-setup.sh
-└── tools
-├── homebrew.sh
-├── oh-my-zsh.sh
-└── claude.sh
+├── osh-setup.sh          # Main CLI orchestrator
+├── .claude.md            # Project architecture guide
+└── tools/                # One file per tool
+    ├── homebrew.sh       # Package manager (priority 0)
+    ├── oh-my-zsh.sh      # Shell framework
+    ├── claude-code.sh    # Claude CLI
+    ├── nvm-nodejs.sh     # Node.js via nvm
+    ├── uv.sh             # Python package manager
+    ├── gcloud-cli.sh     # Google Cloud CLI
+    ├── go.sh             # Go programming language
+    ├── docker-cli.sh     # Docker client
+    ├── colima.sh         # Container runtime
+    └── terraform-stack.sh # Terraform + Terragrunt
+```
 
-````
-
-- `osh-setup.sh` = main CLI
-- `tools/*.sh` = tool “feature scripts” (each tool registers itself)
-- `scripts/new-tool.sh` = interactive generator that creates `tools/<id>.sh`
+Each tool file is self-contained and declares its own dependencies.
 
 ---
 
@@ -89,6 +91,11 @@ Install by id, number, or `all`:
 ./osh-setup.sh install all
 ```
 
+**Reinstallation:** Run the same command to reinstall/update a tool. Useful for:
+- Restoring shell configs (.zshrc, .zshenv) after accidental deletions
+- Updating tool configurations
+- Fixing incomplete installations
+
 Non-interactive mode:
 
 ```bash
@@ -123,125 +130,92 @@ Shows only tools currently detected as installed.
 ./osh-setup.sh history
 ```
 ---
-## Adding a new tool
-### Option A: use the generator (recommended)
-```bash
-chmod +x scripts/new-tool.sh
-./scripts/new-tool.sh
+
+## State and Logs
+
+State directory: `~/.one-shot-setup/`
+
+```
+installed.tsv   # tool id, name, first install date, current version
+install.log     # append-only: timestamp, action, tool id, name, version
 ```
 
-This will generate a new tool file at:
-```bash
-tools/<tool-id>.sh
-```
+**Actions logged:** `installed`, `reinstalled`, `detected`, `skipped`, `failed`
 
-Then edit the new file and implement the *_install() function.
-
-### Option B: copy the template manually
-```bash
-cp tools/_template.sh tools/mytool.sh
-```
-
-Then replace placeholders and implement:
-```bash
-<tool>_show → opens URL
-
-<tool>_install → performs install
-
-<tool>_is_installed → exits 0 if installed, non-zero if not
-
-<tool>_version → prints a version string
-```
+The install log tracks every execution for auditing and troubleshooting.
 
 ---
 
-## State and logs
-
-OneShotSetup writes state to:
-
-```
-~/.one-shot-setup/
-  installed.tsv   # tool id, name, first install date, last known version
-  install.log     # append-only log: timestamp, action, tool id, name, version
-```
-
-Notes:
-
-* `installed.tsv` is updated after successful installs (and also when tools are detected as already installed).
-* `install.log` is append-only for auditing and troubleshooting.
-
----
-
-## Tool ordering: priority + dependencies
+## Tool Ordering: Priority + Dependencies
 
 Each tool declares:
+- **Priority** - Lower numbers run first (Homebrew is `0`, apps are `50+`)
+- **Dependencies** - Tool IDs that must be installed before this tool
 
-* **priority**: lower = more essential, installs earlier
-* **deps**: tool ids that must be installed first
-
-Example:
-
-* Homebrew has priority `0`
-* Other tools can depend on `homebrew`
-
-So:
+Example: Installing `claude` automatically installs `homebrew` first if needed.
 
 ```bash
 ./osh-setup.sh install claude
+# Installs: homebrew (priority 0) → claude (priority 30)
 ```
-
-will install `homebrew` first (if not installed), then `claude`.
 
 ---
 
-## Adding a new tool
+## Adding a New Tool
 
-Create a new file under `tools/`, e.g. `tools/node.sh`, and implement:
+Create `tools/mytool.sh` and implement four functions:
 
-* `<tool>_show` → opens URL
-* `<tool>_install` → performs install
-* `<tool>_is_installed` → exits 0 if installed, non-zero if not
-* `<tool>_version` → prints a version string
+```bash
+mytool_show()          # Open tool's official URL
+mytool_install()       # Install the tool (assumes dependencies available)
+mytool_is_installed()  # Return 0 if installed, 1 if not
+mytool_version()       # Print version string
+```
 
-Then register it:
+Register the tool:
 
 ```bash
 register_tool \
-  "node" \
-  "Nodejs" \
-  "Install Nodejs runtime" \
-  "https://nodejs.org/" \
-  "node_install" \
-  "node_show" \
-  40 \
-  "homebrew" \
-  "node_is_installed" \
-  "node_version"
+  "mytool" \           # Unique ID
+  "MyTool" \           # Display name
+  "Description" \      # Short description
+  "https://url" \      # Official URL
+  "mytool_install" \   # Install function
+  "mytool_show" \      # Show function
+  50 \                 # Priority (lower runs first)
+  "homebrew" \         # Dependencies (space-separated IDs)
+  "mytool_is_installed" \
+  "mytool_version"
 ```
 
----
-
-## Safety notes
-
-This project may run official installers that use `curl | bash` or `curl | sh`.
-
-Best practice:
-
-1. Run `./osh-setup.sh show <tool>` to open the tool’s official page.
-2. Verify the installer source and contents yourself.
-3. Then run `./osh-setup.sh install <tool>`.
+**Important:** See `.claude.md` for architecture principles:
+- Never install or configure dependencies (only check/use them)
+- Support reinstallation (check for complete config, remove incomplete blocks)
+- Keep installations conservative (no extras)
 
 ---
 
-## Roadmap ideas
+## Safety
 
-* Interactive multi-select installer UI
-* `doctor` command (fix PATH issues, verify common requirements)
-* `status --sync` (refresh recorded versions after upgrades)
-* Brewfile support (`brew bundle`) for full package reproducibility
+Some tools use `curl | bash` installers. Best practice:
+
+1. `./osh-setup.sh show <tool>` - Opens official documentation
+2. Review the installer yourself
+3. `./osh-setup.sh install <tool>` - Run when ready
+
+Always verify sources before installing.
+
+---
+
+## Roadmap
+
+* Interactive multi-select UI
+* `doctor` command - Diagnose PATH and environment issues
+* `status --sync` - Refresh versions after external upgrades
+* Brewfile integration - Full package reproducibility
 
 ---
 
 ## License
 
-MIT LICENSE
+MIT

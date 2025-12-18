@@ -7,7 +7,7 @@ One-Shot Setup (osh-setup.sh) is a macOS development tool bootstrapper that inst
 **Key Files:**
 - `osh-setup.sh` - Main orchestration script with dependency resolution
 - `tools/*.sh` - Individual tool installers (one file per tool)
-- `scripts/*.sh` - Helper scripts for common tasks e.g. to scaffold new tools
+- `scripts/*.sh` - Helper scripts for common tasks e.g.Cre to scaffold new tools
 
 ## Core Architecture Principles
 
