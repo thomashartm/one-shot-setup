@@ -19,8 +19,9 @@ docker_cli_version() {
 }
 
 docker_cli_install() {
-  # Installs the Docker client only (no Docker Desktop).
+  # Installs the Docker and docker compose clients only (no Docker Desktop).
   brew install docker
+  brew install docker-compose
 
   echo
   echo "Tip (Colima):"
