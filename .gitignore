@@ -15,7 +15,7 @@ Icon?
 *.swo
 *~
 *.tmp
-
+.zed/
 # -------- Shell / logs --------
 *.log
 
