@@ -2,9 +2,27 @@
 
 A reproducible macOS development machine bootstrapper you can keep in a Git repo and re-run after reinstalling macOS.
 
-**Key Features:**
+---
 
-- **Tool registry** - Numbered list of available tools with descriptions
+## Why This Exists
+
+Setting up a new development machine shouldn't feel like archaeology. Every time you bootstrap a fresh MacBook, you face the same questions: *What did I install last time? Which tools did I actually use? How was everything configured?*
+
+**OneShotSetup solves this with a simple philosophy:**
+
+- **Your setup is code** - Keep it in Git, version it, share it across machines
+- **Consistency matters** - Same tools, same configs, every time
+- **Memory fades** - Let the script remember what you installed 6 months ago
+- **Shell scripts are simple** - No complex frameworks, just Bash. Easy to read, easy to modify, runs anywhere
+- **Bootstrapping should be boring** - Clone, run, get back to work
+
+Whether you're setting up a new laptop, recovering from a clean install, or maintaining multiple development machines, OneShotSetup gives you a single command to restore your complete development environment.
+
+---
+
+## Key Features
+
+- **Tool registry** - Numbered  list of available tools with descriptions
 - **Dependency resolution** - Automatically installs dependencies first (e.g., Homebrew before tools that need it)
 - **Reinstallation support** - Re-run installers to restore shell configs after accidental deletions or updates
 - **State tracking** - Local state folder (`~/.one-shot-setup/`) with install history and version tracking
@@ -17,8 +35,8 @@ A reproducible macOS development machine bootstrapper you can keep in a Git repo
 
 ```
 .
-├── osh-setup.sh          # Main CLI orchestrator
-├── .claude.md            # Project architecture guide
+├── setup.sh              # Main CLI orchestrator
+├── CLAUDE.md             # Project architecture guide
 └── tools/                # One file per tool
     ├── homebrew.sh       # Package manager (priority 0)
     ├── oh-my-zsh.sh      # Shell framework
@@ -29,6 +47,7 @@ A reproducible macOS development machine bootstrapper you can keep in a Git repo
     ├── go.sh             # Go programming language
     ├── docker-cli.sh     # Docker client
     ├── colima.sh         # Container runtime
+    ├── ngnix.sh          # nginx HTTP server
     └── terraform-stack.sh # Terraform + Terragrunt
 ```
 
@@ -49,8 +68,8 @@ Each tool file is self-contained and declares its own dependencies.
 git clone <your-repo-url>
 cd <your-repo-folder>
 
-chmod +x osh-setup.sh
-./osh-setup.sh list
+chmod +x setup.sh
+./setup.sh list
 ````
 
 ---
@@ -60,7 +79,7 @@ chmod +x osh-setup.sh
 ### List available tools
 
 ```bash
-./osh-setup.sh list
+./setup.sh list
 ```
 
 Shows a numbered list with:
@@ -76,9 +95,9 @@ Shows a numbered list with:
 Open the tool’s official page in your browser:
 
 ```bash
-./osh-setup.sh show homebrew
-./osh-setup.sh show 1
-./osh-setup.sh show all
+./setup.sh show homebrew
+./setup.sh show 1
+./setup.sh show all
 ```
 
 ### Install tools
@@ -86,9 +105,9 @@ Open the tool’s official page in your browser:
 Install by id, number, or `all`:
 
 ```bash
-./osh-setup.sh install homebrew
-./osh-setup.sh install 1 3
-./osh-setup.sh install all
+./setup.sh install homebrew
+./setup.sh install 1 3
+./setup.sh install all
 ```
 
 **Reinstallation:** Run the same command to reinstall/update a tool. Useful for:
@@ -99,19 +118,19 @@ Install by id, number, or `all`:
 Non-interactive mode:
 
 ```bash
-./osh-setup.sh install homebrew claude -y
+./setup.sh install homebrew claude -y
 ```
 
 Skip dependency expansion (advanced):
 
 ```bash
-./osh-setup.sh install claude --no-deps
+./setup.sh install claude --no-deps
 ```
 
 ### Check installation status and versions
 
 ```bash
-./osh-setup.sh status
+./setup.sh status
 ```
 
 Outputs install detection + current version for every registered tool.
@@ -119,7 +138,7 @@ Outputs install detection + current version for every registered tool.
 ### List installed tools
 
 ```bash
-./osh-setup.sh installed
+./setup.sh installed
 ```
 
 Shows only tools currently detected as installed.
@@ -127,7 +146,7 @@ Shows only tools currently detected as installed.
 ### View install history log
 
 ```bash
-./osh-setup.sh history
+./setup.sh history
 ```
 ---
 
@@ -155,7 +174,7 @@ Each tool declares:
 Example: Installing `claude` automatically installs `homebrew` first if needed.
 
 ```bash
-./osh-setup.sh install claude
+./setup.sh install claude
 # Installs: homebrew (priority 0) → claude (priority 30)
 ```
 
@@ -199,9 +218,9 @@ register_tool \
 
 Some tools use `curl | bash` installers. Best practice:
 
-1. `./osh-setup.sh show <tool>` - Opens official documentation
+1. `./setup.sh show <tool>` - Opens official documentation
 2. Review the installer yourself
-3. `./osh-setup.sh install <tool>` - Run when ready
+3. `./setup.sh install <tool>` - Run when ready
 
 Always verify sources before installing.
 

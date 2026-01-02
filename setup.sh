@@ -113,20 +113,20 @@ confirm() {
 
 usage() {
   cat <<'EOF'
-MacMason (start.sh) - macOS dev tool bootstrapper
+OneShotSetup (setup.sh) - macOS dev tool bootstrapper
 
 State:
   ~/.one-shot-setup/installed.tsv   # installed registry
   ~/.one-shot-setup/install.log     # append-only install log
 
 Usage:
-  ./start.sh list
-  ./start.sh show <selection...>
-  ./start.sh install <selection...> [-y|--yes] [--no-deps]
-  ./start.sh status
-  ./start.sh installed
-  ./start.sh history
-  ./start.sh help
+  ./setup.sh list
+  ./setup.sh show <selection...>
+  ./setup.sh install <selection...> [-y|--yes] [--no-deps]
+  ./setup.sh status
+  ./setup.sh installed
+  ./setup.sh history
+  ./setup.sh help
 
 Selections:
   - tool number from `list` (e.g. 1)
@@ -134,10 +134,10 @@ Selections:
   - all
 
 Examples:
-  ./start.sh list
-  ./start.sh status
-  ./start.sh installed
-  ./start.sh install claude -y
+  ./setup.sh list
+  ./setup.sh status
+  ./setup.sh installed
+  ./setup.sh install claude -y
 EOF
 }
 
@@ -261,7 +261,7 @@ collect_initial_indices() {
   local indices=()
   local i sel idx
 
-  (( ${#sels[@]} > 0 )) || die "No selection provided. Use: ./start.sh list"
+  (( ${#sels[@]} > 0 )) || die "No selection provided. Use: ./setup.sh list"
 
   if [[ "${sels[0]}" == "all" ]]; then
     for ((i=0; i<TOOLS_COUNT; i++)); do indices+=("$i"); done
@@ -271,7 +271,7 @@ collect_initial_indices() {
 
   for sel in "${sels[@]}"; do
     idx="$(resolve_selection_to_index "$sel" || true)"
-    [[ -n "${idx:-}" ]] || die "Unknown selection: '$sel' (use ./start.sh list)"
+    [[ -n "${idx:-}" ]] || die "Unknown selection: '$sel' (use ./setup.sh list)"
     indices+=("$idx")
   done
 
@@ -494,7 +494,7 @@ main() {
       usage
       ;;
     *)
-      die "Unknown command: $cmd (use ./start.sh help)"
+      die "Unknown command: $cmd (use ./setup.sh help)"
       ;;
   esac
 }
