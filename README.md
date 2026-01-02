@@ -47,6 +47,7 @@ Whether you're setting up a new laptop, recovering from a clean install, or main
     ├── go.sh             # Go programming language
     ├── docker-cli.sh     # Docker client
     ├── colima.sh         # Container runtime
+    ├── mkcert.sh         # Locally-trusted development certificates
     ├── ngnix.sh          # nginx HTTP server
     └── terraform-stack.sh # Terraform + Terragrunt
 ```
